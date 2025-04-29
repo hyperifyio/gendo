@@ -1,0 +1,22 @@
+# Calculator example using math tool
+
+# Error handler
+2: Explain what went wrong with the calculation in simple terms.
+
+# If any following operation fails, it goes to node 2 for error explanation
+2!
+
+# Input formatter (from stdin)
+0: Extract the mathematical operation from the text. Return only the mathematical expression, removing any natural language. For example: "What is 1 plus 1?" -> "1 + 1", "Calculate 5 times 3" -> "5 * 3", "Divide 10 by 2" -> "10 / 2"
+
+# Result formatter (to stdout)
+1: Format the calculation result in a natural language response. For example: If input is "2", respond with "The result is 2."
+
+# Define a math tool for calculations
+3: tool math
+
+# Formatted input lines go to math tool
+3 < 0
+
+# Math result goes to the output formatter
+1 < 3

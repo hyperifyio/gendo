@@ -1,0 +1,11 @@
+# Simple hello world example
+# Node 1: Simple passthrough to stdout
+1:
+
+# Node 2: AI-powered greeting generator
+2: Generate a creative greeting based on the input name. Be fun and imaginative.
+
+# Input lines
+Hello, World! < 1
+Alice < 2
+Bob < 2 
