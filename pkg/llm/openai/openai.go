@@ -121,7 +121,11 @@ func (l *LLM) Process(prompt, input string) (string, error) {
 	}
 	defer resp.Body.Close()
 
-	body, _ := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Debug("Failed to read response body: %v", err)
+		return "", fmt.Errorf("failed to read response body: %v", err)
+	}
 	log.Debug("Response from OpenAI API: %s", string(body))
 
 	if resp.StatusCode != http.StatusOK {
