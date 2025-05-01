@@ -120,22 +120,25 @@ Gendo also uses **tool nodes** for safe, sandboxed file operations. Include `too
 
 **Example Definitions**
 ```gendo
+
+# Note 10 prints in
+10 : tool : echo
+
 # Node 60 reads "config.json"
-60 : tool : read config.json
+60 : tool : read : config.json
 
 # Node 61 writes to "results.txt"
-61 : tool : write results.txt
+61 : tool : write : results.txt
 ```
 
 **Example Invocations**
 ```gendo
-# Load configuration
-< 60
+# Load configuration and send to node 61
 # → {"threshold":10}
+61 < 60
 
-# Save results
-Some computed output text
-< 61
+# Write to node 61
+61 < 10 Some computed output text
 # → "Written to results.txt"
 ```
 
