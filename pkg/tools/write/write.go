@@ -1,4 +1,4 @@
-package io
+package write
 
 import (
 	"fmt"
@@ -25,7 +25,7 @@ func NewWriteTool(basePath string) *WriteTool {
 // Process implements the tools.Tool interface for WriteTool
 func (t *WriteTool) Process(input string) (string, error) {
 	log.Debug("Processing write input: %q", input)
-	
+
 	// Split input into file path and content
 	parts := strings.SplitN(input, " ", 2)
 	if len(parts) != 2 {
@@ -49,4 +49,4 @@ func (t *WriteTool) Process(input string) (string, error) {
 
 	log.Debug("Successfully wrote %d bytes to %q", len(content), filePath)
 	return fmt.Sprintf("Successfully wrote to %s", filePath), nil
-} 
+}

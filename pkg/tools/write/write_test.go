@@ -1,4 +1,4 @@
-package io
+package write
 
 import (
 	"fmt"
