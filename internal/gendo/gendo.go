@@ -11,9 +11,21 @@ import (
 	"gendo/pkg/log"
 	"gendo/pkg/parser"
 	"gendo/pkg/tools"
-	iotools "gendo/pkg/tools/io"
 	"gendo/pkg/tools/math"
 	"gendo/pkg/tools/rand"
+	readtool "gendo/pkg/tools/read"
+	writetool "gendo/pkg/tools/write"
+)
+
+// NodeType represents the type of a node
+type NodeType string
+
+const (
+	NodeTypeTool    NodeType = "tool"
+	NodeTypeIn      NodeType = "in"
+	NodeTypeOut     NodeType = "out"
+	NodeTypeErr     NodeType = "err"
+	NodeTypeDefault NodeType = ""
 )
 
 // Node represents a Gendo node with its ID, references, and optional prompt
@@ -22,13 +34,15 @@ type Node struct {
 	Refs   []int
 	Prompt string
 	Tool   string
+	Type   NodeType
 }
 
 // processNode processes input through a node, either using OpenAI API, tool, or passthrough
 func processNode(node Node, input string, toolRegistry tools.Registry, llmRegistry llm.Registry) (string, error) {
 	log.Debug("Processing node %d with input: %q", node.ID, input)
-	
-	if node.Tool != "" {
+
+	switch node.Type {
+	case NodeTypeTool:
 		if tool := toolRegistry.Get(node.Tool); tool != nil {
 			log.Debug("Using tool %q for node %d", node.Tool, node.ID)
 			result, err := tool.Process(input)
@@ -40,31 +54,40 @@ func processNode(node Node, input string, toolRegistry tools.Registry, llmRegist
 			return result, nil
 		}
 		return "", fmt.Errorf("unknown tool: %s", node.Tool)
-	}
-
-	if node.Prompt != "" {
-		// Use the OpenAI LLM for processing
-		if llm := llmRegistry.Get("openai"); llm != nil {
-			log.Debug("Using OpenAI LLM for node %d with prompt: %q", node.ID, node.Prompt)
-			result, err := llm.Process(node.Prompt, input)
-			if err != nil {
-				log.Debug("OpenAI LLM failed: %v", err)
-				return "", err
+	case NodeTypeIn:
+		// Input nodes are handled separately in processInput
+		return input, nil
+	case NodeTypeOut:
+		// Output nodes are handled separately in processInput
+		return input, nil
+	case NodeTypeErr:
+		// Error nodes are handled separately in processInput
+		return input, nil
+	default:
+		if node.Prompt != "" {
+			// Use the OpenAI LLM for processing
+			if llm := llmRegistry.Get("openai"); llm != nil {
+				log.Debug("Using OpenAI LLM for node %d with prompt: %q", node.ID, node.Prompt)
+				result, err := llm.Process(node.Prompt, input)
+				if err != nil {
+					log.Debug("OpenAI LLM failed: %v", err)
+					return "", err
+				}
+				log.Debug("OpenAI LLM returned: %q", result)
+				return result, nil
 			}
-			log.Debug("OpenAI LLM returned: %q", result)
-			return result, nil
+			return "", fmt.Errorf("no LLM available")
 		}
-		return "", fmt.Errorf("no LLM available")
+		log.Debug("Node %d is a passthrough node", node.ID)
+		return input, nil // Passthrough for non-AI nodes
 	}
-
-	log.Debug("Node %d is a passthrough node", node.ID)
-	return input, nil // Passthrough for non-AI nodes
 }
 
 // processInput processes a single input line according to Gendo rules
 func processInput(line string, nodes map[int]Node, toolRegistry tools.Registry, llmRegistry llm.Registry, stdoutDefault, stderrDefault int, stdout, stderr io.Writer) error {
 	log.Debug("Processing input line: %q", line)
-	
+
+	// Set up default I/O if not provided
 	if stdout == nil {
 		stdout = os.Stdout
 	}
@@ -72,12 +95,25 @@ func processInput(line string, nodes map[int]Node, toolRegistry tools.Registry, 
 		stderr = os.Stderr
 	}
 
-	// Process through node 0 first (input formatter)
-	if node, ok := nodes[0]; ok {
-		log.Debug("Processing through input formatter node 0")
-		output, err := processNode(node, line, toolRegistry, llmRegistry)
+	// Find I/O nodes
+	var inNode, outNode, errNode *Node
+	for _, node := range nodes {
+		switch node.Type {
+		case NodeTypeIn:
+			inNode = &node
+		case NodeTypeOut:
+			outNode = &node
+		case NodeTypeErr:
+			errNode = &node
+		}
+	}
+
+	// Process through input node if defined
+	if inNode != nil {
+		log.Debug("Processing through input node %d", inNode.ID)
+		output, err := processNode(*inNode, line, toolRegistry, llmRegistry)
 		if err != nil {
-			log.Error("Input formatter failed: %v", err)
+			log.Error("Input node failed: %v", err)
 			fmt.Fprintf(stderr, "Error: %v\n", err)
 			return err
 		}
@@ -90,9 +126,13 @@ func processInput(line string, nodes map[int]Node, toolRegistry tools.Registry, 
 			log.Debug("Processing through node %d", nodeID)
 			output, err := processNode(node, line, toolRegistry, llmRegistry)
 			if err != nil {
-				if stderrDefault > 0 {
+				if errNode != nil {
+					log.Debug("Processing error through error node %d", errNode.ID)
+					errOutput, _ := processNode(*errNode, err.Error(), toolRegistry, llmRegistry)
+					fmt.Fprintln(stderr, errOutput)
+				} else if stderrDefault > 0 {
 					if errNode, ok := nodes[stderrDefault]; ok {
-						log.Debug("Processing error through node %d", stderrDefault)
+						log.Debug("Processing error through default error node %d", stderrDefault)
 						errOutput, _ := processNode(errNode, err.Error(), toolRegistry, llmRegistry)
 						fmt.Fprintln(stderr, errOutput)
 					}
@@ -103,6 +143,18 @@ func processInput(line string, nodes map[int]Node, toolRegistry tools.Registry, 
 		}
 	}
 
+	// Process through output node if defined
+	if outNode != nil {
+		log.Debug("Processing through output node %d", outNode.ID)
+		output, err := processNode(*outNode, line, toolRegistry, llmRegistry)
+		if err != nil {
+			log.Error("Output node failed: %v", err)
+			fmt.Fprintf(stderr, "Error: %v\n", err)
+			return err
+		}
+		line = output
+	}
+
 	log.Debug("Final output: %q", line)
 	fmt.Fprintln(stdout, line)
 	return nil
@@ -111,7 +163,7 @@ func processInput(line string, nodes map[int]Node, toolRegistry tools.Registry, 
 // Run executes a Gendo script from a file
 func Run(filename string, model string) error {
 	log.Debug("Running script: %s", filename)
-	
+
 	file, err := os.Open(filename)
 	if err != nil {
 		log.Error("Failed to open script: %v", err)
@@ -154,6 +206,7 @@ func Run(filename string, model string) error {
 				Refs:   r.RefIDs,
 				Prompt: r.Prompt,
 				Tool:   r.Tool,
+				Type:   NodeType(r.Type),
 			}
 		case *parser.RouteDefinition:
 			if r.Source == 0 && r.Dest == 0 && r.ErrorDest == 0 {
@@ -170,8 +223,8 @@ func Run(filename string, model string) error {
 	// Initialize tool registry
 	log.Debug("Initializing tool registry")
 	toolRegistry := tools.NewRegistry()
-	toolRegistry.Register("read", iotools.NewReadTool(""))
-	toolRegistry.Register("write", iotools.NewWriteTool(""))
+	toolRegistry.Register("read", readtool.NewReadTool(""))
+	toolRegistry.Register("write", writetool.NewWriteTool(""))
 	toolRegistry.Register("math", math.NewTool())
 	toolRegistry.Register("rand", rand.New())
 
@@ -206,4 +259,4 @@ func Run(filename string, model string) error {
 	}
 
 	return nil
-} 
+}

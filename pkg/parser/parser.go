@@ -5,13 +5,25 @@ import (
 	"strings"
 )
 
+// NodeType represents the type of a node
+type NodeType string
+
+const (
+	NodeTypeTool    NodeType = "tool"
+	NodeTypeIn      NodeType = "in"
+	NodeTypeOut     NodeType = "out"
+	NodeTypeErr     NodeType = "err"
+	NodeTypeDefault NodeType = ""
+)
+
 // NodeDefinition represents a parsed node from a script line
 type NodeDefinition struct {
-	ID      int
-	RefIDs  []int    // Reference IDs this node can call
-	Prompt  string   // Optional prompt text
-	IsTool  bool     // Whether this is a tool node
-	Tool    string   // Tool name if IsTool is true
+	ID     int
+	RefIDs []int  // Reference IDs this node can call
+	Prompt string // Optional prompt text
+	IsTool bool   // Whether this is a tool node
+	Tool   string // Tool name if IsTool is true
+	Type   NodeType
 }
 
 // RouteDefinition represents a routing between nodes with optional error handling
@@ -39,52 +51,64 @@ func ParseLine(line string) (interface{}, bool) {
 	return parseRouting(line)
 }
 
-// parseNodeDefinition parses a node definition line: nodeID : refID refID … [: prompt text]
+// parseNodeDefinition parses a node definition line
 func parseNodeDefinition(line string) (*NodeDefinition, bool) {
-	// Split into parts by first colon
+	// Remove any leading/trailing whitespace
+	line = strings.TrimSpace(line)
+
+	// Split by colon
 	parts := strings.SplitN(line, ":", 2)
-	if len(parts) < 2 {
+	if len(parts) != 2 {
 		return nil, false
 	}
 
 	// Parse node ID
-	id, err := strconv.Atoi(strings.TrimSpace(parts[0]))
+	idStr := strings.TrimSpace(parts[0])
+	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		return nil, false
 	}
 
-	// Get the rest of the line after the first colon
+	// Parse the rest of the definition
 	rest := strings.TrimSpace(parts[1])
-	node := &NodeDefinition{ID: id}
+	var refIDs []int
+	var prompt string
+	var tool string
+	var nodeType NodeType
 
-	// Check if this is a tool definition
-	if strings.HasPrefix(rest, "tool ") {
-		node.IsTool = true
-		node.Tool = strings.TrimSpace(strings.TrimPrefix(rest, "tool "))
-		return node, true
-	}
-
-	// If there's a second colon, everything after it is the prompt
-	if idx := strings.Index(rest, ":"); idx != -1 {
-		refs := strings.Fields(rest[:idx])
-		for _, ref := range refs {
-			if refID, err := strconv.Atoi(ref); err == nil {
-				node.RefIDs = append(node.RefIDs, refID)
-			}
-		}
-		// Take everything after the first colon as the prompt
-		node.Prompt = strings.TrimSpace(rest[idx+1:])
+	// Check for special node types first
+	if rest == "in" {
+		nodeType = NodeTypeIn
+	} else if rest == "out" {
+		nodeType = NodeTypeOut
+	} else if rest == "err" {
+		nodeType = NodeTypeErr
 	} else {
-		// No prompt, just refs
-		refs := strings.Fields(rest)
-		for _, ref := range refs {
-			if refID, err := strconv.Atoi(ref); err == nil {
-				node.RefIDs = append(node.RefIDs, refID)
+		// Parse tool or prompt
+		if strings.HasPrefix(rest, "tool") {
+			nodeType = NodeTypeTool
+			tool = strings.TrimSpace(strings.TrimPrefix(rest, "tool"))
+		} else {
+			// Check for references
+			refParts := strings.Split(rest, " ")
+			for _, ref := range refParts {
+				if refID, err := strconv.Atoi(ref); err == nil {
+					refIDs = append(refIDs, refID)
+				} else {
+					prompt = rest
+					break
+				}
 			}
 		}
 	}
 
-	return node, true
+	return &NodeDefinition{
+		ID:     id,
+		RefIDs: refIDs,
+		Prompt: prompt,
+		Tool:   tool,
+		Type:   nodeType,
+	}, true
 }
 
 // parseRouting parses a routing line: [errorDest !] [dest <] src input text
@@ -133,4 +157,4 @@ func parseRouting(line string) (*RouteDefinition, bool) {
 	}
 
 	return route, true
-} 
+}
