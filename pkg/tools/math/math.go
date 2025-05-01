@@ -18,50 +18,12 @@ func NewTool() *Tool {
 	return &Tool{}
 }
 
-// convertWordOperators converts word-based operators to their symbol equivalents
-func convertWordOperators(input string) string {
-	replacements := map[string]string{
-		"plus":           "+",
-		"minus":          "-",
-		"times":          "*",
-		"multiplied by":  "*",
-		"divided by":     "/",
-	}
-
-	result := input
-	for word, symbol := range replacements {
-		result = strings.ReplaceAll(result, word, symbol)
-	}
-	return result
-}
-
 // extractFirstExpression extracts the first mathematical expression from the input
 func extractFirstExpression(input string) string {
 	input = strings.TrimSpace(input)
 
 	// Remove quotes if present
 	input = strings.Trim(input, "\"")
-
-	// Remove question marks and other punctuation
-	input = strings.TrimRight(input, "?!.,")
-
-	// Handle "What is" prefix
-	if strings.HasPrefix(strings.ToLower(input), "what is") {
-		input = input[7:] // Remove "What is"
-	}
-
-	// If the input contains "is" or "equals", try each part
-	parts := strings.Split(input, "is")
-	if len(parts) > 1 {
-		input = parts[0]
-	}
-	parts = strings.Split(input, "equals")
-	if len(parts) > 1 {
-		input = parts[0]
-	}
-
-	// Convert word operators to symbols
-	input = convertWordOperators(input)
 
 	// Try to extract a valid expression
 	if expr, ok := tryExtractExpression(input); ok {
@@ -78,9 +40,6 @@ func tryExtractExpression(input string) (string, bool) {
 	var inNumber bool
 	var hasOperator bool
 	var foundDigit bool
-
-	// Remove any trailing punctuation
-	input = strings.TrimRight(input, "?!.,")
 
 	for i, char := range input {
 		switch {
@@ -197,7 +156,7 @@ func parseExpression(expr string) (float64, float64, rune, error) {
 // Process implements the tools.Tool interface
 func (t *Tool) Process(input string) (string, error) {
 	log.Debug("Processing math input: %q", input)
-	
+
 	// Extract expression
 	expr := extractFirstExpression(input)
 	if expr == "" {
@@ -237,4 +196,4 @@ func (t *Tool) Process(input string) (string, error) {
 	output := fmt.Sprintf("%g", result)
 	log.Debug("Math result: %s", output)
 	return output, nil
-} 
+}

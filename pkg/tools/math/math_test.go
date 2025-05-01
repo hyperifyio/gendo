@@ -1,8 +1,8 @@
 package math
 
 import (
-	"testing"
 	"strings"
+	"testing"
 )
 
 func TestExtractFirstExpression(t *testing.T) {
@@ -22,26 +22,6 @@ func TestExtractFirstExpression(t *testing.T) {
 			expected: "1+1",
 		},
 		{
-			name:     "Expression with natural language prefix",
-			input:    "What is 1 + 1?",
-			expected: "1+1",
-		},
-		{
-			name:     "Expression with natural language suffix",
-			input:    "1 + 1 equals 2",
-			expected: "1+1",
-		},
-		{
-			name:     "Expression with word operators",
-			input:    "1 plus 1",
-			expected: "1+1",
-		},
-		{
-			name:     "Expression with mixed operators",
-			input:    "1 plus 2 * 3",
-			expected: "1+2*3",
-		},
-		{
 			name:     "Expression with negative numbers",
 			input:    "-1 + -2",
 			expected: "-1+-2",
@@ -53,23 +33,8 @@ func TestExtractFirstExpression(t *testing.T) {
 		},
 		{
 			name:     "Expression with quotes",
-			input:    "\"1 + 1\" is 2",
+			input:    "\"1 + 1\"",
 			expected: "1+1",
-		},
-		{
-			name:     "Expression with division",
-			input:    "10 divided by 2",
-			expected: "10/2",
-		},
-		{
-			name:     "Expression with multiplication words",
-			input:    "5 times 3",
-			expected: "5*3",
-		},
-		{
-			name:     "Expression with subtraction",
-			input:    "5 minus 3",
-			expected: "5-3",
 		},
 		{
 			name:     "No valid expression",
@@ -170,11 +135,11 @@ func TestParseExpression(t *testing.T) {
 			wantErrMessage: "no valid operator found",
 		},
 		{
-			name:           "Multiple operators",
-			input:          "1+2+3",
-			wantNum1:       1,
-			wantNum2:       2,
-			wantOperator:   '+',
+			name:         "Multiple operators",
+			input:        "1+2+3",
+			wantNum1:     1,
+			wantNum2:     2,
+			wantOperator: '+',
 		},
 		{
 			name:         "Decimal numbers",
@@ -213,4 +178,4 @@ func TestParseExpression(t *testing.T) {
 			}
 		})
 	}
-} 
+}
