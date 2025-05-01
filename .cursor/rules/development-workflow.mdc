@@ -1,6 +1,6 @@
 ---
-description:
-globs:
+description: 
+globs: 
 alwaysApply: false
 ---
 # Development Workflow Guide
@@ -20,14 +20,14 @@ When implementing new tools:
 
 1. Define the tool struct and interface implementation in `pkg/tools/[toolname]/[toolname].go`
 2. Follow the Tool interface defined in [pkg/tools/tool.go](mdc:pkg/tools/tool.go)
-3. Include comprehensive tests and benchmarks
-4. Example: [pkg/tools/io/io.go](mdc:pkg/tools/io/io.go)
+3. Write tests in `pkg/tools/[toolname]/[toolname]_test.go`
+4. Example: [pkg/tools/math/math.go](mdc:pkg/tools/math/math.go)
 
 ## Testing Guidelines
-- Write unit tests for all new functionality
+- Write unit tests for all new functionality in `pkg/tools/[toolname]/[toolname]_test.go`
 - Include benchmarks for performance-critical operations
 - Use table-driven tests where appropriate
-- Example: [pkg/tools/io/io_test.go](mdc:pkg/tools/io/io_test.go)
+- Example: [pkg/tools/rand/rand.go](mdc:pkg/tools/rand/rand.go)
 
 ## Code Organization
 - Keep tool implementations modular and focused
