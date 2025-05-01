@@ -3,3 +3,31 @@ description:
 globs:
 alwaysApply: false
 ---
+# LLM Integration Guide
+
+## Overview
+The project uses Language Model (LLM) integration for processing. The core components are:
+
+## LLM Interface
+- [pkg/llm/llm.go](mdc:pkg/llm/llm.go) defines the LLM interface and registry
+- All LLM implementations must implement the Process method
+- Registry pattern allows multiple LLM backends
+
+## OpenAI Implementation
+- [pkg/llm/openai/openai.go](mdc:pkg/llm/openai/openai.go) provides OpenAI integration
+- Handles API communication and response parsing
+- Supports environment-based configuration
+
+## Integration Guidelines
+When implementing new LLM providers:
+
+1. Create a new package under `pkg/llm/`
+2. Implement the LLM interface
+3. Handle API keys and configuration securely
+4. Follow the OpenAI implementation as a reference
+
+## Usage Example
+```go
+llm := openai.New(apiKey)
+response, err := llm.Process(systemPrompt, userInput)
+```

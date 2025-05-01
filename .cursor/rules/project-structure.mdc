@@ -3,3 +3,28 @@ description:
 globs:
 alwaysApply: false
 ---
+# Project Structure Guide
+
+## Overview
+Gendo is a Go-based tool system with modular architecture. The main components are:
+
+## Core Components
+- [pkg/tools/tool.go](mdc:pkg/tools/tool.go) - Defines the core Tool interface and Registry
+- [pkg/llm/llm.go](mdc:pkg/llm/llm.go) - Language Model interface and Registry
+- [pkg/llm/openai/openai.go](mdc:pkg/llm/openai/openai.go) - OpenAI LLM implementation
+
+## Tools
+The tools package contains various tool implementations:
+
+### I/O Tools
+- [pkg/tools/io/io.go](mdc:pkg/tools/io/io.go) - File reading and writing tools
+- [pkg/tools/io/io_test.go](mdc:pkg/tools/io/io_test.go) - Tests and benchmarks for I/O tools
+
+### Math Tools
+- [pkg/tools/math/math.go](mdc:pkg/tools/math/math.go) - Mathematical operations tool
+
+### Random Tools
+- [pkg/tools/rand/rand.go](mdc:pkg/tools/rand/rand.go) - Random number generation tool
+
+## Build System
+- [Makefile](mdc:Makefile) - Build automation and development tasks

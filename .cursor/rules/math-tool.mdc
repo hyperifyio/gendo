@@ -3,3 +3,83 @@ description:
 globs:
 alwaysApply: false
 ---
+# Math Tool Implementation Guide
+
+The math tool in [pkg/tools/math/math.go](mdc:pkg/tools/math/math.go) provides mathematical expression parsing and calculation capabilities for the Gendo runtime. This guide outlines key implementation details and testing requirements.
+
+## Core Components
+
+### Expression Extraction
+The tool extracts mathematical expressions from natural language input through these key functions:
+
+1. `extractFirstExpression`: Main entry point that handles:
+   - Natural language prefixes (e.g., "What is")
+   - Quoted expressions
+   - Word-based operators
+   - Multiple expression formats
+
+2. `tryExtractExpression`: Low-level parser that:
+   - Handles numeric values and operators
+   - Maintains expression validity
+   - Removes unnecessary punctuation
+   - Preserves negative numbers
+
+3. `convertWordOperators`: Converts natural language operators to symbols:
+   - "plus" → "+"
+   - "minus" → "-"
+   - "times" or "multiplied by" → "*"
+   - "divided by" → "/"
+
+### Expression Parsing
+The `parseExpression` function handles:
+- Operator precedence
+- Multiple operators
+- Decimal numbers
+- Error conditions
+
+## Testing Requirements
+
+All changes must be verified through [pkg/tools/math/math_test.go](mdc:pkg/tools/math/math_test.go). Test cases must cover:
+
+1. Natural Language Processing:
+   - Prefixes ("What is")
+   - Suffixes ("equals", "is")
+   - Word operators
+   - Mixed formats
+
+2. Mathematical Operations:
+   - Basic arithmetic
+   - Negative numbers
+   - Decimal values
+   - Multiple operators
+
+3. Error Handling:
+   - Invalid expressions
+   - Division by zero
+   - Missing operators
+   - Invalid numbers
+
+## Integration Testing
+
+The calculator example in [examples/calculator.gendo](mdc:examples/calculator.gendo) serves as an integration test. Changes must be verified by running:
+
+```bash
+echo 'What is 1+1?' | ./gendo --verbose examples/calculator.gendo
+```
+
+## Development Guidelines
+
+1. Follow TDD practices:
+   - Write tests first
+   - Verify edge cases
+   - Maintain test coverage
+
+2. Error Handling:
+   - Return meaningful error messages
+   - Validate input thoroughly
+   - Handle edge cases gracefully
+
+3. Code Organization:
+   - Keep functions focused and single-purpose
+   - Document complex logic
+   - Use clear variable names
