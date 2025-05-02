@@ -1,3 +1,7 @@
+// Package gendo implements the core functionality of the Gendo tool.
+// It provides the main processing logic for handling nodes, tools, and LLM interactions.
+// The package defines the node types, processing functions, and the main Run function
+// that executes Gendo scripts.
 package gendo
 
 import (

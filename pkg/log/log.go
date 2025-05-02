@@ -1,3 +1,7 @@
+// Package log provides logging functionality for the Gendo tool.
+// It supports different log levels (Debug, Info, Error) and includes
+// caller context information in log messages. The package allows
+// configuration of verbosity and output destination.
 package log
 
 import (
@@ -52,4 +56,4 @@ func Info(format string, args ...interface{}) {
 func Error(format string, args ...interface{}) {
 	context := getCallerContext()
 	fmt.Fprintf(output, "ERROR [%s]: "+format+"\n", append([]interface{}{context}, args...)...)
-} 
+}

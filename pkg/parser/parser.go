@@ -1,3 +1,8 @@
+// Package parser implements the parsing logic for Gendo script files.
+// It handles both node definitions and routing instructions, supporting
+// various node types (tool, input, output, error) and routing patterns.
+// The parser converts script lines into structured data that can be
+// processed by the Gendo runtime.
 package parser
 
 import (

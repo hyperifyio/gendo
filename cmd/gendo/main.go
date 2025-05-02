@@ -1,3 +1,6 @@
+// Package main is the entry point for the Gendo CLI tool.
+// It handles command-line argument parsing and initializes the Gendo runtime.
+// The tool accepts a script file as input and optional flags for verbosity and model selection.
 package main
 
 import (
@@ -28,4 +31,4 @@ func main() {
 		log.Error("Failed to run script: %v", err)
 		os.Exit(1)
 	}
-} 
+}

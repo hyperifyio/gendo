@@ -1,3 +1,6 @@
+// Package tools provides the interface and registry for Gendo tools.
+// It defines the Tool interface that all tools must implement and provides
+// a Registry for managing and accessing tools by name.
 package tools
 
 // Tool represents a Gendo tool that can process input and produce output
@@ -22,4 +25,4 @@ func (r Registry) Register(name string, tool Tool) {
 // Get returns a tool by name, or nil if not found
 func (r Registry) Get(name string) Tool {
 	return r[name]
-} 
+}
