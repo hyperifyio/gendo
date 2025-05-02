@@ -120,6 +120,18 @@ func processInput(line string, nodes map[int]Node, toolRegistry tools.Registry, 
 		line = output
 	}
 
+	// Process through output node if defined
+	if outNode != nil {
+		log.Debug("Processing through output node %d", outNode.ID)
+		output, err := processNode(*outNode, line, toolRegistry, llmRegistry)
+		if err != nil {
+			log.Error("Output node failed: %v", err)
+			fmt.Fprintf(stderr, "Error: %v\n", err)
+			return err
+		}
+		line = output
+	}
+
 	// Process through the chain of nodes defined in the script
 	for nodeID := 3; nodeID >= 1; nodeID-- {
 		if node, ok := nodes[nodeID]; ok {
@@ -141,18 +153,6 @@ func processInput(line string, nodes map[int]Node, toolRegistry tools.Registry, 
 			}
 			line = output
 		}
-	}
-
-	// Process through output node if defined
-	if outNode != nil {
-		log.Debug("Processing through output node %d", outNode.ID)
-		output, err := processNode(*outNode, line, toolRegistry, llmRegistry)
-		if err != nil {
-			log.Error("Output node failed: %v", err)
-			fmt.Fprintf(stderr, "Error: %v\n", err)
-			return err
-		}
-		line = output
 	}
 
 	log.Debug("Final output: %q", line)
