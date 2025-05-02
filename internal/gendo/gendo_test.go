@@ -1,3 +1,6 @@
+// Package gendo_test contains test cases for the Gendo core functionality.
+// It includes tests for node processing, LLM interactions, and various node types.
+// The tests use mock implementations to verify correct behavior without external dependencies.
 package gendo
 
 import (
@@ -88,4 +91,4 @@ func TestProcessNode(t *testing.T) {
 			}
 		})
 	}
-} 
+}

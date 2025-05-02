@@ -1,3 +1,7 @@
+// Package write_test contains test cases for the file writing tool.
+// It includes unit tests for various write operations and benchmarks
+// for different file sizes. Tests use temporary directories to avoid
+// affecting the actual filesystem.
 package write
 
 import (

@@ -1,3 +1,6 @@
+// Package math_test contains test cases for the mathematical expression tool.
+// It includes unit tests for expression extraction and parsing, covering
+// various mathematical operations, number formats, and error cases.
 package math
 
 import (

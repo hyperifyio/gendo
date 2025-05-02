@@ -1,3 +1,7 @@
+// Package read_test contains test cases for the file reading tool.
+// It includes unit tests for various read operations and benchmarks
+// for different file sizes. Tests use temporary directories to avoid
+// affecting the actual filesystem.
 package read
 
 import (

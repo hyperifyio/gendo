@@ -1,3 +1,7 @@
+// Package parser_test contains test cases for the Gendo script parser.
+// It includes comprehensive tests for node definitions, routing instructions,
+// and various edge cases in script parsing. The tests verify correct
+// handling of different script line formats and error conditions.
 package parser
 
 import (
@@ -7,10 +11,10 @@ import (
 
 func TestParseLine(t *testing.T) {
 	tests := []struct {
-		name     string
-		input    string
-		want     interface{}
-		wantOk   bool
+		name   string
+		input  string
+		want   interface{}
+		wantOk bool
 	}{
 		{
 			name:   "Empty line",
@@ -170,4 +174,4 @@ func TestParseLine(t *testing.T) {
 			}
 		})
 	}
-} 
+}

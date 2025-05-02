@@ -1,3 +1,6 @@
+// Package rand_test contains test cases for the random number generation tool.
+// It includes unit tests for number generation, input validation, and
+// distribution analysis to ensure proper random number generation.
 package rand
 
 import (
