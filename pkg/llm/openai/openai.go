@@ -1,3 +1,7 @@
+// Package openai implements the OpenAI language model integration for Gendo.
+// It provides functionality to interact with OpenAI's API, supporting
+// configurable models, API keys, and base URLs. The package handles
+// authentication, request formatting, and response parsing.
 package openai
 
 import (
@@ -147,4 +151,4 @@ func (l *LLM) Process(prompt, input string) (string, error) {
 	result := openAIResp.Choices[0].Message.Content
 	log.Debug("OpenAI LLM returned: %q", result)
 	return result, nil
-} 
+}

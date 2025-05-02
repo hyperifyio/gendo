@@ -1,3 +1,6 @@
+// Package llm provides the interface and registry for language models in Gendo.
+// It defines the LLM interface that all language model implementations must follow
+// and provides a Registry for managing and accessing different LLM implementations.
 package llm
 
 // LLM represents a language model that can process prompts and inputs
@@ -22,4 +25,4 @@ func (r Registry) Register(name string, llm LLM) {
 // Get returns an LLM by name, or nil if not found
 func (r Registry) Get(name string) LLM {
 	return r[name]
-} 
+}
