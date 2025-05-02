@@ -1,3 +1,7 @@
+// Package math implements a mathematical expression evaluation tool for Gendo.
+// It provides functionality to parse and evaluate basic arithmetic expressions,
+// supporting addition, subtraction, multiplication, and division operations.
+// The tool can extract mathematical expressions from natural language input.
 package math
 
 import (

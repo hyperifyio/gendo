@@ -1,3 +1,6 @@
+// Package rand implements a random number generation tool for Gendo.
+// It provides functionality to generate random numbers within a specified range,
+// using a cryptographically secure random number generator.
 package rand
 
 import (
@@ -26,23 +29,23 @@ func New() *Tool {
 // Process implements the tools.Tool interface
 func (t *Tool) Process(input string) (string, error) {
 	log.Debug("Processing random input: %q", input)
-	
+
 	// Parse the max number
 	max, err := strconv.ParseInt(input, 10, 64)
 	if err != nil {
 		log.Debug("Failed to parse max number %q: %v", input, err)
 		return "", fmt.Errorf("invalid max number: %v", err)
 	}
-	
+
 	if max <= 0 {
 		log.Debug("Invalid max number: %d (must be positive)", max)
 		return "", fmt.Errorf("max number must be positive")
 	}
-	
+
 	// Generate random number
 	result := t.rand.Int63n(max)
 	output := fmt.Sprintf("%d", result)
-	
+
 	log.Debug("Generated random number: %s (max: %d)", output, max)
 	return output, nil
-} 
+}

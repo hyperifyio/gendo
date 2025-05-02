@@ -1,3 +1,6 @@
+// Package write implements a file writing tool for Gendo.
+// It provides functionality to write content to files, with support for
+// base path configuration and proper file permissions.
 package write
 
 import (

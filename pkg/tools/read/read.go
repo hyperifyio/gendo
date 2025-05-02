@@ -1,3 +1,6 @@
+// Package read implements a file reading tool for Gendo.
+// It provides functionality to read content from files, with support for
+// base path configuration and proper error handling.
 package read
 
 import (
