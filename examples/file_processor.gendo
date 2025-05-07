@@ -1,0 +1,28 @@
+# File processing example
+# Node 1: Read tool for input
+1: tool read
+
+# Node 2: Write tool for output
+2: tool write
+
+# Node 3: Content processor
+3: Analyze the text and create a summary with key points.
+
+# Node 4: Error handler
+4: Explain the file operation error in user-friendly terms.
+
+# Create a test file
+test.txt < 2
+This is a sample text file.
+It contains multiple lines.
+We will process this content.
+End of file.
+
+# Read and process the file
+test.txt ! 4 < 1 < 3
+
+# Write the processed output
+output.txt Summary: ! 4 < 2
+
+# Try reading a non-existent file (demonstrates error handling)
+nonexistent.txt ! 4 < 1 

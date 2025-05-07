@@ -1,0 +1,63 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Gendo Runtime Testing Requirements
+
+## Test-Driven Development
+
+All changes to the Gendo runtime must follow strict test-driven development practices:
+
+1. Write tests before implementing features
+2. Ensure all code paths are covered by tests
+3. Verify edge cases and error conditions
+4. Document test cases with clear descriptions
+
+## Testing Layers
+
+### Unit Tests
+- Each package must have comprehensive unit tests
+- Test files should be named `*_test.go`
+- Use table-driven tests for multiple test cases
+- Mock external dependencies appropriately
+
+### Integration Tests
+- Examples in [examples/](mdc:examples/) serve as integration tests
+- Do not modify example files unless updating the specification
+- Verify changes against example scripts
+- Use verbose logging for debugging
+
+### Runtime Verification
+- Build the project using `make`
+- Run example scripts to verify runtime behavior
+- Test with the local LLM endpoint (http://localhost:18080/v1)
+- Do not use external APIs or install new software
+
+## LLM Integration
+
+When testing LLM-related functionality:
+
+1. Use the local endpoint only
+2. Preserve complete prompt definitions
+3. Verify prompt construction
+4. Test error handling for LLM responses
+
+## Error Handling
+
+Test cases must verify:
+
+1. Invalid inputs
+2. Malformed scripts
+3. Network failures
+4. Resource limitations
+5. Edge cases in data processing
+
+## Documentation
+
+All test files must include:
+
+1. Clear test case descriptions
+2. Expected inputs and outputs
+3. Error conditions being tested
+4. Any special setup requirements
