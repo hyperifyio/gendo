@@ -1,3 +1,9 @@
+***This is old version. ***
+
+Latest development is here: https://github.com/hyperifyio/gnd/issues/31
+
+---
+
 # Gendo Language Specification v0.2
 
 ## 1. Introduction
